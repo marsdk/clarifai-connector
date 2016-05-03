@@ -67,10 +67,8 @@ class Color extends Command {
             'encoded_data' => '@' . $fileData[0]
         ]);
 
-        dd($this->curl->response);
-
         $responseHandler = new ResponseHandler($this->curl->response);
         return $responseHandler;
     }
-    
+
 }

@@ -44,7 +44,7 @@ class ResponseHandler {
     {
         $this->response = $response;
     }
-    
+
     /**
      * Handle what response class we will return based on the $response data.
      *
@@ -90,9 +90,13 @@ class ResponseHandler {
             // Check status codes.
             if ($response->status_code == 'OK') {
                 $isTag = $this->hasPropertiesTags($response);
+                $isColor = $this->hasPropertiesColors($response);
 
                 if ($isTag) {
                     $returnResponse = new TagResponse($response);
+                }
+                elseif ($isColor) {
+                    $returnResponse = new ColorResponse($response);
                 }
                 else {
                     $returnResponse = new Response($response);
@@ -176,6 +180,31 @@ class ResponseHandler {
         return true;
     }
 
+    protected function hasPropertiesColors($response) {
 
 
+        // Check if the property meta is found on $response and is an object.
+        if (!property_exists($response, 'results') && is_object($response)) {
+            return false;
+        }
+
+        // Get the meta data.
+        $results = $response->results;
+
+        if (empty($results) || !is_array($results)) {
+            return false;
+        }
+
+        // Get the first item from the top of the array.
+        $resultObject = reset($results);
+
+        if (!property_exists($resultObject, 'colors') || !is_array($resultObject->colors)) {
+            return false;
+        }
+
+        // If we have a meta object and a tag property on it, this should be
+        // a proper Tag response.
+        return true;
+    }
+    
 }
