@@ -1,6 +1,12 @@
 <?php
 
-namespace marsdk\Clarifai\Auth;
+namespace Marsdk\Clarifai\Auth;
+
+use Marsdk\Clarifai\Auth\Client\Client;
+use Marsdk\Clarifai\Auth\Response\AuthResponse;
+use Marsdk\Clarifai\Auth\Response\Response;
+use Marsdk\Clarifai\Auth\Response\ResponseHandler;
+use Curl\Curl;
 
 class Auth {
     /**
@@ -17,6 +23,11 @@ class Auth {
      * @var Curl
      */
     protected $curl;
+
+    /**
+     * @var Response $response;
+     */
+    protected $response;
 
     /**
      * Auth constructor.
@@ -89,12 +100,46 @@ class Auth {
         return $this;
     }
 
+    /**
+     * @return Response
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * @param Response $response
+     *
+     * @return Auth
+     */
+    public function setResponse($response)
+    {
+        $this->response = $response;
+
+        return $this;
+    }
+
+
+
     public function authenticate()
     {
         $this->getCurl()->setBasicAuthentication($this->getClient()->getClientId(),
             $this->getClient()->getClientSecret());
 
-        dd($this->curl->response);
-    }
+        $this->curl->post('https://api.clarifai.com/v1/token/', [
+            'grant_type' => $this->getClient()->getGrantType()
+        ]);
 
+        // Create a response object from the Curl result.
+        $responseHandler = new ResponseHandler($this->curl->response);
+
+        // Throw an error if we get an error from the API.
+        if ($responseHandler->getResponse() instanceof Response) {
+            throw new \Exception($responseHandler->getResponse()->getStatusMsg());
+        }
+
+        $this->setResponse($responseHandler->getResponse());
+    }
+    
 }
