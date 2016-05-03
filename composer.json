@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Marsdk\\Clarifai\\": "src/"
+            "Marsdk\\Clarifai\\": "src/Clarifai"
         }
     },
     "minimum-stability": "stable"

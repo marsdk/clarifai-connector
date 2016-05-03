@@ -1,6 +1,6 @@
 <?php
 
-namespace marsdk\Clarifai\Auth\Client;
+namespace Marsdk\Clarifai\Auth\Client;
 
 class Client {
 
